@@ -1,2 +1,3 @@
 # hello-world
-my first step
+I'm jed, from china.
+this is my first step in github.
