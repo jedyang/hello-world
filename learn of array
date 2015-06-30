@@ -1,0 +1,56 @@
+public class ArrayCopy
+{
+
+    public static void main(String[] args)
+    {
+        int[] arr = {1,2,3,4,5};
+
+        int[] copied = new int[10];
+        System.arraycopy(arr, 0, copied, 1, 5);//5 is the length to copy
+
+        System.out.println(Arrays.toString(copied));
+
+
+
+        int[] copied2 = Arrays.copyOf(arr, 10); //10 the the length of the new array
+        System.out.println(Arrays.toString(copied2));
+
+        copied2 = Arrays.copyOf(arr, 3);
+        System.out.println(Arrays.toString(copied2));
+
+        Son[] ss = {new Son()};
+        // 第三个参数表示返回的数组类型
+        // 子类型数组可转成父类型
+        Father[] fArray = Arrays.copyOf(ss, 1, Son[].class);
+        // 父类型要强转,(运行时也会报错)
+//        Son[] sArray = (Son[]) Arrays.copyOf(ss, 1, Father[].class);
+
+        // 注意数组类的表示 一个或多个[（表示几维）+类的标识符+类的全限定名
+        System.out.println("boolean:"+new boolean[2][3].getClass());
+        System.out.println("byte:"+new byte[2].getClass());
+        System.out.println("short:"+new short[2][3].getClass());
+        System.out.println("char:"+new char[2][3].getClass());
+        System.out.println("int:"+new int[2][3].getClass());
+        System.out.println("float:"+new float[2][3].getClass());
+        System.out.println("long:"+new long[2][3].getClass());
+        System.out.println("double:"+new double[2][3].getClass());
+        System.out.println(fArray.getClass());
+        System.out.println(new String[2][3].getClass());
+        System.out.println(new Integer[2][3].getClass());
+        // 数组类型都没有构造函数的
+        // 数组的Class类实例是java虚拟机动态创建动态加载的，其结构与普通java类的Class实例有一些不同。
+        // JDK API中有一个java.lang.reflect.Array类，这个类提供了很多方法(绝大多数是native方法，这在另一个方面证明了java对数组的支持是专用指令支持的
+        System.out.println(fArray.getClass().getConstructors().length);
+    }
+}
+
+
+class Father
+{
+
+}
+
+class Son extends Father
+{
+
+}
