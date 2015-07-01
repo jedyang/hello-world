@@ -1,0 +1,221 @@
+package test.mybatis;
+
+public class Person
+{
+
+    private String id;
+
+    private String name;
+
+    public String getId()
+    {
+        return id;
+    }
+
+    public void setId(String id)
+    {
+        this.id = id;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Person [id=" + id + ", name=" + name + "]";
+    }
+
+
+}
+
+
+
+===================================================
+package test.mybatis;
+
+/**
+ *
+ * <一句话功能简述>
+ * mybatis需要提供一个接口，里面放访问数据库的方法
+ * 这里只要写好接口。
+ * mybatis会根据我们写的mapper.xml生成实现类
+ * @author  y00282995
+ * @version  [V200R001C00, 2015年6月30日]
+ */
+public interface PersonDao
+{
+    // 这里定义的方法，暂时可以不在xml中全部实现,但是如果调用的会报找不到的错误。
+
+    public void insertPerson(Person p);
+
+    public Person getById(String id);
+}
+
+
+============================================================
+package test.mybatis;
+
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.junit.Test;
+
+public class TestUnit
+{
+
+    // 创建sqlSessionFactory
+    SqlSessionFactory sqlSessionFactory = Utils.getSqlSessionFactory();
+
+    @Test
+    public void insert()
+    {
+        // 开一个session
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+
+        try
+        {
+            // 得到接口Mapper
+            PersonDao personMapper = sqlSession.getMapper(PersonDao.class);
+
+            Person p = new Person();
+            p.setId("113");
+            p.setName("test3");
+            personMapper.insertPerson(p);
+            // 一定要记得commit，否则不会真正入库。
+            sqlSession.commit();
+
+            // 但是下面的查询依然查得到，因为是同一个session
+//            Person person = personMapper.getById("113");
+
+//            System.out.println(person);
+        }
+        finally
+        {
+            sqlSession.close();
+        }
+    }
+
+    @Test
+    public void select()
+    {
+        // 开一个session
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+
+        try
+        {
+            // 得到接口Mapper
+            PersonDao personMapper = sqlSession.getMapper(PersonDao.class);
+
+            Person person = personMapper.getById("113");
+
+            System.out.println(person);
+        }
+        finally
+        {
+            sqlSession.close();
+        }
+    }
+
+}
+================================================================
+package test.mybatis;
+
+import java.io.IOException;
+import java.io.Reader;
+
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+
+public class Utils
+{
+    private static SqlSessionFactory sqlSessionFactory;
+    static
+    {
+    String resource = "test/mybatis/conf.xml";
+    Reader reader = null;
+    try
+    {
+        reader = Resources.getResourceAsReader(resource);
+    }
+    catch (IOException e)
+    {
+        System.out.println(e.getMessage());
+    }
+
+    // 创建sqlSessionFactory
+    sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
+    }
+
+    // 获取sqlSessionFactory
+    public static SqlSessionFactory getSqlSessionFactory()
+    {
+        return sqlSessionFactory;
+
+    }
+}
+
+
+==========================================================
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+  <environments default="development">
+    <environment id="development">
+      <transactionManager type="JDBC"/>
+      <dataSource type="POOLED">
+        <property name="driver" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://10.137.241.118/abc"/>
+        <property name="username" value="yunsheng"/>
+        <property name="password" value="yunsheng"/>
+      </dataSource>
+    </environment>
+  </environments>
+  
+  <mappers>
+    <mapper resource="test/mybatis/PersonMapper.xml"/>
+  </mappers>
+</configuration>
+
+
+
+
+
+
+
+
+
+
+===========================================================================
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 去关联我们写的操作数据库的接口 -->
+<mapper namespace="test.mybatis.PersonDao">
+  
+  <insert id="insertPerson" parameterType="test.mybatis.Person">
+    <!-- 有人说这里的sql不能加;结尾,但是我测试是可以的 -->
+    insert into person (id,name) values (#{id},#{name});
+  </insert>
+  
+  <select id="getById" parameterType="java.lang.String"
+    resultType="test.mybatis.Person">
+    select * from person where id=#{id};
+  </select>
+  
+</mapper>
+
+
+
+
+
+
