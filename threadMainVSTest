@@ -1,0 +1,76 @@
+package test.thread;
+
+import org.junit.Test;
+
+public class TestUnit
+{
+    @Test
+    public void testSynClass() throws InterruptedException
+    {
+        //刚执行一次test线程已经结束，所以只能打印1。
+        //可以用join等待线程结束
+        //但是在main中会一直等待线程结束
+        Thread t = new SynClass1();
+        t.start();
+
+//        t.join();
+    }
+}
+
+class SynClass1 extends Thread
+{
+    int i = 1;
+
+    public void f1() throws InterruptedException
+    {
+//        synchronized (this)
+//        {
+//            for (int j = 0; j < 10; j++)
+//            {
+//                System.out.println(i++);
+//                Thread.sleep(1000);
+//            }
+//        }
+//        synchronized (this.getClass())
+//        {
+            System.out.println(i++);
+//        }
+    }
+
+    @Override
+    public void run()
+    {
+        try
+        {
+            for (int j = 0; j < 10; j++)
+            {
+                f1();
+                Thread.sleep(1000);
+            }
+
+        }
+        catch (InterruptedException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+}
+
+
+
+===========================================================
+package test.thread;
+
+
+public class TestMain
+{
+
+    public static void main(String[] args)
+    {
+        // TODO Auto-generated method stub
+        new SynClass1().start();
+    }
+
+}
