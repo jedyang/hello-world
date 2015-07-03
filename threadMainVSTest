@@ -9,7 +9,7 @@ public class TestUnit
     {
         //刚执行一次test线程已经结束，所以只能打印1。
         //可以用join等待线程结束
-        //但是在main中会一直等待线程结束
+        //但是在java程序中执行不一样
         Thread t = new SynClass1();
         t.start();
 
@@ -66,7 +66,8 @@ package test.thread;
 
 public class TestMain
 {
-
+    //Java进程在所有的非守护线程结束后，会全部结束，所有守护线程都会停止。如果只是某个父线程结束，它产生的子线程不会受到影响。
+    //junit害死人啊
     public static void main(String[] args)
     {
         // TODO Auto-generated method stub
